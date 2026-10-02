@@ -66,7 +66,7 @@ export default function NewsletterPage() {
   return (
     <section className="flex flex-col justify-center items-center p-3 overflow-hidden relative h-full w-full bg-background md:p-10">
       {/* Glow */}
-      <div className="p-52 shadow-2xl rounded-[8rem] overflow-hidden relative bg-flagGradient flex flex-col justify-center items-center scale-98 hover:scale-100 transition-all duration-500">
+      <div className="p-52 shadow-2xl rounded-[8rem] overflow-hidden relative bg-flagGradient flex flex-col justify-center items-center scale-98 hover:scale-100 transition-all duration-500 text-white">
         <GrainLayer />
         <motion.div
           className="w-full aspect-square absolute top-3/5 left-1/2 -translate-x-1/2 bg-primary rounded-full blur-[100px]"

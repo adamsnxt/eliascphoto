@@ -79,10 +79,6 @@ export default function Home() {
             </h1>
             <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-white sm:text-base">
               {hero.description}{" "}
-              <span className="text-primary inline">
-                EN VIVO{" "}
-                <span className="inline-block w-2 h-2 rounded-full bg-red-600" />
-              </span>
             </p>
           </div>
           <Link
@@ -91,6 +87,19 @@ export default function Home() {
           >
             {hero.cta.buy.text} <FaWhatsapp />
           </Link>
+          <span className="text-primary inline absolute top-5 right-5 lg:top-5 lg:right-25">
+            EN VIVO{" "}
+            <span className="inline-block w-2 h-2 rounded-full bg-red-600" />
+          </span>
+          <p className="text-white absolute bottom-5 left-1/2 -translate-x-1/2 text-xs sm:text-sm z-50 text-center">
+            Tambien puedes suscribirte a mi{" "}
+            <Link
+              href="/newsletter"
+              className="text-blue-500 font-bold underline"
+            >
+              Newsletter
+            </Link>
+          </p>
         </div>
         <div
           className="w-full min-h-36 max-w-7xl flex-1 overflow-hidden mask-[linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]"

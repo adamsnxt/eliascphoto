@@ -85,11 +85,11 @@ export default function NewReview() {
   };
 
   return (
-    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-4 sm:p-8">
-      <div className="relative flex w-full max-w-3xl flex-col items-center justify-center overflow-hidden rounded-[2.5rem] bg-flagGradient p-4 shadow-2xl sm:p-8 md:p-12">
+    <section className="relative flex h-screen w-full  items-center justify-center overflow-hidden bg-background p-3">
+      <div className="relative flex flex-1 max-w-xl flex-col  items-center justify-center overflow-hidden rounded-[2.5rem] bg-flagGradient p-3 shadow-2xl sm:p-8 md:p-12">
         <GrainLayer />
         <motion.div
-          className="absolute left-1/2 top-1/2 aspect-square w-full max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary blur-[120px]"
+          className="absolute left-1/2 bottom-1/2 aspect-square w-full max-w-xl -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary blur-[120px]"
           initial={{
             opacity: 0,
             scale: 0.7,
