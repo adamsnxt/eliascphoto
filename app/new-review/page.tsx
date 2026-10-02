@@ -12,8 +12,10 @@ import {
 import { IoSend } from "react-icons/io5";
 import { sileo } from "sileo";
 import { ThinkingOrb } from "thinking-orbs";
+import { useRouter } from "next/navigation";
 
 export default function NewReview() {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(createReview, {
     success: false,
     error: null,
@@ -24,6 +26,7 @@ export default function NewReview() {
     resolve: (value: unknown) => void;
     reject: (reason?: unknown) => void;
   } | null>(null);
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (pending && !promiseRef.current) {
@@ -50,13 +53,25 @@ export default function NewReview() {
 
       if (state.success) {
         notification.resolve(state);
+        redirectTimeoutRef.current = setTimeout(() => {
+          router.replace("/");
+        }, 2000);
       } else {
         notification.reject(
           new Error(state.error ?? "No se pudo enviar la reseña."),
         );
       }
     }
-  }, [pending, state]);
+  }, [pending, router, state]);
+
+  useEffect(
+    () => () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   const handleReviewChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textarea = event.currentTarget;
