@@ -116,13 +116,18 @@ export default function Home() {
                     key={`${copy}-${index}`}
                     className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 flex-col rounded-2xl bg-background p-4 shadow-md sm:w-80 sm:p-5"
                   >
-                    <p className="text-sm font-semibold sm:text-base">
+                    <p className="shrink-0 text-sm font-semibold sm:text-base">
                       {reseña.name}
                     </p>
-                    <p className="mt-2 flex-1 overflow-hidden text-ellipsis text-xs leading-relaxed sm:text-sm truncate">
+                    <p
+                      title={reseña.text}
+                      className="mt-2 min-h-0 flex-1 line-clamp-3 text-xs leading-relaxed sm:text-sm"
+                    >
                       {reseña.text}
                     </p>
-                    <StarsRate rating={reseña.rate} />
+                    <div className="mt-3 flex h-5 shrink-0 items-center">
+                      <StarsRate rating={reseña.rate} />
+                    </div>
                   </article>
                 ))}
               </div>
