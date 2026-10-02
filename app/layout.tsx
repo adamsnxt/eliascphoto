@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ELIASCPHOTO",
   description: "",
+  icons: {
+    icon: "/logo/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

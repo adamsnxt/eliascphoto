@@ -15,7 +15,9 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-icons": "^5.7.0",
-    "sileo": "^0.1.5"
+    "react-rating-stars-component": "^2.2.0",
+    "sileo": "^0.1.5",
+    "thinking-orbs": "^0.3.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
