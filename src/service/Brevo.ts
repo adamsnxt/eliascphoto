@@ -11,4 +11,14 @@ export const Brevo = {
       listIds: [5],
     });
   },
+  getAllContacts: async () => {
+    const { contacts } = await client.contacts.getContacts({
+      listIds: [5],
+    });
+    return contacts.map((contact) => ({
+      id: contact.id,
+      email: contact.email ?? null,
+      createdAt: contact.createdAt,
+    }));
+  },
 };

@@ -25,21 +25,36 @@ export default function Home() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [isReviewsHovered, setIsReviewsHovered] = useState(false);
 
-  const getReviewsClient = async () => {
-    const reviews = await getReviews();
-    return reviews;
-  };
-
   useEffect(() => {
+    let isMounted = true;
+    let retryTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    const scheduleRetry = () => {
+      if (!isMounted) return;
+      retryTimeout = setTimeout(() => void fetchReviews(), 3000);
+    };
+
     const fetchReviews = async () => {
       try {
-        const reviews = await getReviewsClient();
-        setReviews(reviews);
+        const result = await getReviews();
+        if (!isMounted) return;
+
+        if (result.success) {
+          setReviews(result.reviews);
+        } else if (result.retryable) {
+          scheduleRetry();
+        }
       } catch (error) {
         console.error("Error fetching reviews:", error);
+        scheduleRetry();
       }
     };
-    fetchReviews();
+
+    void fetchReviews();
+    return () => {
+      isMounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
+    };
   }, []);
 
   useEffect(() => {
@@ -161,7 +176,7 @@ export default function Home() {
                   aria-hidden={copy === 1}
                 >
                   {reviews.map((reseña, index) => (
-                    <article
+                    <motion.article
                       key={`${copy}-${index}`}
                       role="button"
                       tabIndex={copy === 1 ? -1 : 0}
@@ -172,6 +187,13 @@ export default function Home() {
                           event.preventDefault();
                           setSelectedReview(reseña);
                         }
+                      }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{
+                        duration: 0.4,
+                        delay: Math.min(index * 0.05 + copy * 0.08, 0.4),
+                        ease: [0.22, 1, 0.36, 1],
                       }}
                       className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 cursor-pointer flex-col rounded-2xl bg-background p-4 text-left shadow-md transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-80 sm:p-5"
                     >
@@ -193,7 +215,7 @@ export default function Home() {
                       <div className="mt-3 flex h-5 shrink-0 items-center">
                         <StarsRate rating={reseña.rate} />
                       </div>
-                    </article>
+                    </motion.article>
                   ))}
                 </div>
               ))}

@@ -1,6 +1,7 @@
 "use server";
 
 import { Brevo } from "../service/Brevo";
+import type { Contact } from "../types/Brevo";
 
 export async function AddBrevoContact(_prevState: unknown, formData: FormData) {
   const email = formData.get("email");
@@ -25,6 +26,28 @@ export async function AddBrevoContact(_prevState: unknown, formData: FormData) {
     return {
       success: false,
       error: "No se pudo suscribir",
+    };
+  }
+}
+
+export async function GetBrevoContacts(): Promise<{
+  success: boolean;
+  contacts: Contact[];
+  error: string | null;
+}> {
+  try {
+    const contacts = await Brevo.getAllContacts();
+    return {
+      success: true,
+      contacts,
+      error: null,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      contacts: [],
+      error: "No se pudieron cargar los contactos.",
     };
   }
 }
