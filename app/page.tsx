@@ -1,6 +1,13 @@
 "use client";
-import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
 import hero from "./../src/data/Hero.json";
 import { StarsRate } from "@/src/components/atoms";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +20,10 @@ export default function Home() {
   const progress = useMotionValue(0);
   const x = useTransform(progress, (value) => `${-50 * value}%`);
   const carouselAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+  const [isReviewsHovered, setIsReviewsHovered] = useState(false);
 
   const getReviewsClient = async () => {
     const reviews = await getReviews();
@@ -41,6 +51,40 @@ export default function Home() {
 
     return () => carouselAnimation.current?.stop();
   }, [progress]);
+
+  useEffect(() => {
+    const animation = carouselAnimation.current;
+    if (!animation) return;
+
+    if (isReviewsHovered || selectedReview) {
+      animation.pause();
+    } else {
+      animation.play();
+    }
+  }, [isReviewsHovered, selectedReview]);
+
+  useEffect(() => {
+    if (!selectedReview) return;
+
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedReview(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+      previousFocus?.focus();
+    };
+  }, [selectedReview]);
 
   return (
     <main className="relative flex h-dvh flex-col items-center overflow-hidden">
@@ -105,13 +149,8 @@ export default function Home() {
           className="w-full min-h-36 max-w-7xl flex-1 overflow-hidden mask-[linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]"
           aria-label="Reseñas de clientes"
           role="region"
-          onMouseEnter={() => {
-            if (carouselAnimation.current)
-              carouselAnimation.current.speed = 0.35;
-          }}
-          onMouseLeave={() => {
-            if (carouselAnimation.current) carouselAnimation.current.speed = 1;
-          }}
+          onMouseEnter={() => setIsReviewsHovered(true)}
+          onMouseLeave={() => setIsReviewsHovered(false)}
         >
           <motion.div className="flex h-full w-max" style={{ x }}>
             {[0, 1].map((copy) => (
@@ -123,14 +162,30 @@ export default function Home() {
                 {reviews.map((reseña, index) => (
                   <article
                     key={`${copy}-${index}`}
-                    className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 flex-col rounded-2xl bg-background p-4 shadow-md sm:w-80 sm:p-5"
+                    role="button"
+                    tabIndex={copy === 1 ? -1 : 0}
+                    aria-label={`Leer la reseña completa de ${reseña.name}`}
+                    onClick={() => setSelectedReview(reseña)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setSelectedReview(reseña);
+                      }
+                    }}
+                    className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 cursor-pointer flex-col rounded-2xl bg-background p-4 text-left shadow-md transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-80 sm:p-5"
                   >
                     <p className="shrink-0 text-sm font-semibold sm:text-base">
                       {reseña.name}
                     </p>
                     <p
                       title={reseña.text}
-                      className="mt-2 min-h-0 flex-1 line-clamp-3 text-xs leading-relaxed sm:text-sm"
+                      className="mt-2 min-h-0 flex-1 overflow-hidden whitespace-normal wrap-break-word text-xs leading-relaxed sm:text-sm"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 3,
+                        overflowWrap: "anywhere",
+                      }}
                     >
                       {reseña.text}
                     </p>
@@ -144,6 +199,59 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
+      <AnimatePresence>
+        {selectedReview && (
+          <motion.div
+            className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm sm:p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedReview(null)}
+          >
+            <motion.section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="review-dialog-title"
+              className="my-auto w-full max-w-xl rounded-3xl border border-white/15 bg-background p-6 text-foreground shadow-2xl sm:p-8"
+              initial={{ opacity: 0, y: 24, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase text-foreground/60">
+                    Reseña completa
+                  </p>
+                  <h2
+                    id="review-dialog-title"
+                    className="mt-1 wrap-break-word text-xl font-bold sm:text-2xl"
+                  >
+                    {selectedReview.name}
+                  </h2>
+                </div>
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  aria-label="Cerrar reseña"
+                  title="Cerrar"
+                  onClick={() => setSelectedReview(null)}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground/10 transition hover:bg-foreground/20 focus-visible:outline-2 focus-visible:outline-primary"
+                >
+                  <IoClose aria-hidden="true" size={20} />
+                </button>
+              </div>
+              <p className="mt-6 max-h-[55dvh] overflow-y-auto whitespace-pre-wrap wrap-break-word text-sm leading-7 sm:text-base">
+                {selectedReview.text}
+              </p>
+              <div className="mt-6 border-t border-foreground/10 pt-4">
+                <StarsRate rating={selectedReview.rate} />
+              </div>
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
