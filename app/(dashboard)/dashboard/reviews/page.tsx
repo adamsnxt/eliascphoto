@@ -145,7 +145,7 @@ export default function ReviewsDashboardPage() {
   };
 
   return (
-    <main className="flex h-full min-w-0 w-full flex-col gap-5 p-4">
+    <main className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Reseñas</h1>
@@ -164,7 +164,7 @@ export default function ReviewsDashboardPage() {
         </p>
       )}
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-4xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]">
+      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -176,95 +176,164 @@ export default function ReviewsDashboardPage() {
         ) : reviews.length === 0 ? (
           <p className="p-6 text-sm text-foreground/65">Aún no hay reseñas.</p>
         ) : (
-          <div className="h-full overflow-auto">
-            <table className="w-full min-w-232 border-collapse text-left text-sm">
-              <thead className="sticky top-0 z-10 bg-background text-xs uppercase text-foreground/60">
-                <tr>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Cliente
-                  </th>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Reseña
-                  </th>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Calificación
-                  </th>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Visible
-                  </th>
-                  <th className="border-b border-black/10 px-5 py-4 text-right font-semibold">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/10">
-                {reviews.map((review) => (
-                  <tr key={review.id} className="align-top">
-                    <td className="max-w-48 px-5 py-4 font-semibold">
-                      <span className="line-clamp-2 wrap-break-word">
+          <>
+            <ul className="grid h-full gap-3 overflow-y-auto p-3 md:hidden">
+              {reviews.map((review) => (
+                <li
+                  key={review.id}
+                  className="min-w-0 rounded-xl border border-black/10 bg-white/40 p-4"
+                >
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="wrap-break-word font-semibold">
                         {review.name}
-                      </span>
-                    </td>
-                    <td className="max-w-md px-5 py-4">
-                      <p className="line-clamp-2 whitespace-pre-wrap wrap-break-word text-foreground/75">
+                      </h2>
+                      <p className="mt-1 line-clamp-3 whitespace-pre-wrap wrap-break-word text-sm text-foreground/70">
                         {review.text}
                       </p>
-                    </td>
-                    <td className="whitespace-nowrap px-5 py-4">
+                    </div>
+                    <span className="shrink-0 whitespace-nowrap text-sm font-semibold text-amber-700">
                       {review.rate}/5
-                    </td>
-                    <td className="px-5 py-4">
-                      <label className="inline-flex cursor-pointer items-center gap-2">
-                        <input
-                          type="checkbox"
-                          role="switch"
-                          checked={review.isActive}
-                          disabled={pendingReviewId === review.id}
-                          aria-label={`${review.isActive ? "Desactivar" : "Activar"} reseña de ${review.name}`}
-                          onChange={() => void toggleReviewActive(review)}
-                          className="peer sr-only"
-                        />
+                    </span>
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-black/10 pt-3">
+                    <label className="inline-flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        role="switch"
+                        checked={review.isActive}
+                        disabled={pendingReviewId === review.id}
+                        aria-label={`${review.isActive ? "Desactivar" : "Activar"} reseña de ${review.name}`}
+                        onChange={() => void toggleReviewActive(review)}
+                        className="peer sr-only"
+                      />
+                      <span
+                        className={`relative h-6 w-11 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary ${review.isActive ? "bg-emerald-600" : "bg-black/25"}`}
+                      >
                         <span
-                          className={`relative h-6 w-11 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary ${review.isActive ? "bg-emerald-600" : "bg-black/25"}`}
-                        >
-                          <span
-                            className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${review.isActive ? "translate-x-6" : "translate-x-1"}`}
-                          />
-                        </span>
-                        <span className="text-xs text-foreground/70">
-                          {review.isActive ? "Activa" : "Inactiva"}
-                        </span>
-                      </label>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          title="Editar reseña"
-                          aria-label={`Editar reseña de ${review.name}`}
-                          disabled={pendingReviewId === review.id}
-                          onClick={() => openEditDialog(review)}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-black/5 disabled:opacity-40"
-                        >
-                          <IoCreateOutline size={19} />
-                        </button>
-                        <button
-                          type="button"
-                          title="Eliminar reseña"
-                          aria-label={`Eliminar reseña de ${review.name}`}
-                          disabled={pendingReviewId === review.id}
-                          onClick={() => void removeReview(review)}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-red-700 transition hover:bg-red-100 disabled:opacity-40"
-                        >
-                          <IoTrashOutline size={18} />
-                        </button>
-                      </div>
-                    </td>
+                          className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${review.isActive ? "translate-x-6" : "translate-x-1"}`}
+                        />
+                      </span>
+                      <span className="text-xs text-foreground/70">
+                        {review.isActive ? "Activa" : "Inactiva"}
+                      </span>
+                    </label>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        title="Editar reseña"
+                        aria-label={`Editar reseña de ${review.name}`}
+                        disabled={pendingReviewId === review.id}
+                        onClick={() => openEditDialog(review)}
+                        className="flex h-10 w-10 items-center justify-center rounded-lg transition hover:bg-black/5 disabled:opacity-40"
+                      >
+                        <IoCreateOutline size={19} />
+                      </button>
+                      <button
+                        type="button"
+                        title="Eliminar reseña"
+                        aria-label={`Eliminar reseña de ${review.name}`}
+                        disabled={pendingReviewId === review.id}
+                        onClick={() => void removeReview(review)}
+                        className="flex h-10 w-10 items-center justify-center rounded-lg text-red-700 transition hover:bg-red-100 disabled:opacity-40"
+                      >
+                        <IoTrashOutline size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden h-full overflow-auto md:block">
+              <table className="w-full min-w-232 border-collapse text-left text-sm">
+                <thead className="sticky top-0 z-10 bg-background text-xs uppercase text-foreground/60">
+                  <tr>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Cliente
+                    </th>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Reseña
+                    </th>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Calificación
+                    </th>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Visible
+                    </th>
+                    <th className="border-b border-black/10 px-5 py-4 text-right font-semibold">
+                      Acciones
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-black/10">
+                  {reviews.map((review) => (
+                    <tr key={review.id} className="align-top">
+                      <td className="max-w-48 px-5 py-4 font-semibold">
+                        <span className="line-clamp-2 wrap-break-word">
+                          {review.name}
+                        </span>
+                      </td>
+                      <td className="max-w-md px-5 py-4">
+                        <p className="line-clamp-2 whitespace-pre-wrap wrap-break-word text-foreground/75">
+                          {review.text}
+                        </p>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-4">
+                        {review.rate}/5
+                      </td>
+                      <td className="px-5 py-4">
+                        <label className="inline-flex cursor-pointer items-center gap-2">
+                          <input
+                            type="checkbox"
+                            role="switch"
+                            checked={review.isActive}
+                            disabled={pendingReviewId === review.id}
+                            aria-label={`${review.isActive ? "Desactivar" : "Activar"} reseña de ${review.name}`}
+                            onChange={() => void toggleReviewActive(review)}
+                            className="peer sr-only"
+                          />
+                          <span
+                            className={`relative h-6 w-11 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary ${review.isActive ? "bg-emerald-600" : "bg-black/25"}`}
+                          >
+                            <span
+                              className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-transform ${review.isActive ? "translate-x-6" : "translate-x-1"}`}
+                            />
+                          </span>
+                          <span className="text-xs text-foreground/70">
+                            {review.isActive ? "Activa" : "Inactiva"}
+                          </span>
+                        </label>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            title="Editar reseña"
+                            aria-label={`Editar reseña de ${review.name}`}
+                            disabled={pendingReviewId === review.id}
+                            onClick={() => openEditDialog(review)}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg transition hover:bg-black/5 disabled:opacity-40"
+                          >
+                            <IoCreateOutline size={19} />
+                          </button>
+                          <button
+                            type="button"
+                            title="Eliminar reseña"
+                            aria-label={`Eliminar reseña de ${review.name}`}
+                            disabled={pendingReviewId === review.id}
+                            onClick={() => void removeReview(review)}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-red-700 transition hover:bg-red-100 disabled:opacity-40"
+                          >
+                            <IoTrashOutline size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
 
@@ -281,7 +350,7 @@ export default function ReviewsDashboardPage() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="review-dialog-title"
-              className="my-auto w-full max-w-xl rounded-2xl bg-background p-5 shadow-2xl sm:p-7"
+              className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto rounded-2xl bg-background p-5 shadow-2xl sm:p-7"
               initial={{ opacity: 0, y: 20, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.98 }}

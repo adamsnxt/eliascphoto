@@ -42,7 +42,7 @@ export default function DashboardLoginPage() {
         </div>
 
         <form className="flex flex-col gap-5" action={formAction}>
-          <label className="flex flex-col gap-2 text-sm font-medium">
+          <label className="flex flex-col gap-2 font-medium">
             Usuario
             <span className="relative">
               <IoMailOutline
@@ -61,7 +61,7 @@ export default function DashboardLoginPage() {
             </span>
           </label>
 
-          <label className="flex flex-col gap-2 text-sm font-medium">
+          <label className="flex flex-col gap-2 font-medium">
             Contraseña
             <span className="relative">
               <IoLockClosedOutline

@@ -32,7 +32,7 @@ export default function NewsletterDashboardPage() {
   }, []);
 
   return (
-    <main className="flex h-full min-w-0 w-full flex-col gap-5 p-4">
+    <main className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Suscriptores</h1>
@@ -40,12 +40,12 @@ export default function NewsletterDashboardPage() {
             Contactos de la newsletter
           </p>
         </div>
-        {/* <p className="text-sm font-medium text-foreground/70">
+        <p className="text-sm font-medium text-foreground/70">
           {contacts.length} {contacts.length === 1 ? "contacto" : "contactos"}
-        </p> */}
+        </p>
       </header>
 
-      <section className="h-full flex-1 overflow-hidden rounded-4xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]">
+      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -59,34 +59,53 @@ export default function NewsletterDashboardPage() {
             Todavía no hay suscriptores.
           </p>
         ) : (
-          <div className="h-full overflow-auto">
-            <table className="w-full min-w-120 border-collapse text-left text-sm">
-              <thead className="sticky top-0 bg-background text-xs uppercase text-foreground/60">
-                <tr>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Email
-                  </th>
-                  <th className="border-b border-black/10 px-5 py-4 font-semibold">
-                    Fecha de alta
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/10">
-                {contacts.map((contact) => (
-                  <tr key={contact.id}>
-                    <td className="px-5 py-4 font-medium">
-                      {contact.email ?? "Sin email"}
-                    </td>
-                    <td className="px-5 py-4 text-foreground/70">
-                      {new Intl.DateTimeFormat("es", {
-                        dateStyle: "medium",
-                      }).format(new Date(contact.createdAt))}
-                    </td>
+          <>
+            <ul className="h-full overflow-y-auto divide-y divide-black/10 p-3 md:hidden">
+              {contacts.map((contact) => (
+                <li
+                  key={contact.id}
+                  className="flex min-w-0 flex-col gap-1 py-3"
+                >
+                  <span className="break-all text-sm font-semibold">
+                    {contact.email ?? "Sin email"}
+                  </span>
+                  <time className="text-xs text-foreground/65">
+                    {new Intl.DateTimeFormat("es", {
+                      dateStyle: "medium",
+                    }).format(new Date(contact.createdAt))}
+                  </time>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden h-full overflow-auto md:block">
+              <table className="w-full min-w-120 border-collapse text-left text-sm">
+                <thead className="sticky top-0 bg-background text-xs uppercase text-foreground/60">
+                  <tr>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Email
+                    </th>
+                    <th className="border-b border-black/10 px-5 py-4 font-semibold">
+                      Fecha de alta
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-black/10">
+                  {contacts.map((contact) => (
+                    <tr key={contact.id}>
+                      <td className="px-5 py-4 font-medium">
+                        {contact.email ?? "Sin email"}
+                      </td>
+                      <td className="px-5 py-4 text-foreground/70">
+                        {new Intl.DateTimeFormat("es", {
+                          dateStyle: "medium",
+                        }).format(new Date(contact.createdAt))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
     </main>

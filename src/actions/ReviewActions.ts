@@ -135,7 +135,7 @@ export async function getReviews() {
     const reviews = await ReviewService.getReviews();
     return {
       success: true as const,
-      reviews: reviews.filter((review) => review.isActive),
+      reviews,
       retryable: false as const,
     };
   } catch (error) {

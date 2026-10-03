@@ -40,7 +40,9 @@ export default function Home() {
         if (!isMounted) return;
 
         if (result.success) {
-          setReviews(result.reviews);
+          setReviews(
+            result.reviews.filter((review) => review.isActive === true),
+          );
         } else if (result.retryable) {
           scheduleRetry();
         }
