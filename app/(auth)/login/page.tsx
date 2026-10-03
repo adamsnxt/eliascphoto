@@ -4,13 +4,20 @@ import Image from "next/image";
 import { useActionState } from "react";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
-import { loginDashboard } from "@/src/actions/AuthActions";
+import {
+  loginDashboard,
+  openRegistrationPage,
+} from "@/src/actions/AuthActions";
 
 export default function DashboardLoginPage() {
   const [state, formAction, pending] = useActionState(loginDashboard, {
     success: false,
     error: null,
   });
+  const [registrationState, registrationAction] = useActionState(
+    openRegistrationPage,
+    { error: null },
+  );
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4 sm:p-8">
@@ -90,6 +97,21 @@ export default function DashboardLoginPage() {
           </button>
         </form>
       </motion.section>
+      {registrationState.error && (
+        <p
+          className="fixed bottom-16 right-4 z-50 max-w-[min(24rem,calc(100vw-2rem))] rounded-xl bg-red-100 px-4 py-3 text-sm text-red-800 shadow-lg"
+          role="alert"
+        >
+          {registrationState.error}
+        </p>
+      )}
+      <form action={registrationAction} className="fixed bottom-0 right-0 z-50">
+        <button
+          type="submit"
+          aria-label="Acceso alternativo"
+          className="h-12 w-12 cursor-pointer opacity-0 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-primary"
+        />
+      </form>
     </main>
   );
 }

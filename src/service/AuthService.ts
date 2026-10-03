@@ -184,6 +184,35 @@ export const AuthService = {
       );
     }
   },
+  register: async (userName: string, password: string): Promise<void> => {
+    let response: Response;
+    try {
+      response = await fetch(`${process.env.API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName, password }),
+        cache: "no-store",
+      });
+    } catch {
+      throw new Error("No se pudo conectar con el servicio de registro.");
+    }
+
+    if (response.ok) return;
+
+    const payload: unknown = await response.json().catch(() => null);
+    const body =
+      payload && typeof payload === "object"
+        ? (payload as Record<string, unknown>)
+        : null;
+    const message = [body?.message, body?.detail, body?.error].find(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0,
+    );
+    throw new AuthApiError(
+      response.status,
+      message ?? "No se pudo crear el usuario.",
+    );
+  },
   storeTokens,
   clearTokens,
   requestProtected: async (path: string, options: RequestInit = {}) => {

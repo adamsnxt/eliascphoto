@@ -1,4 +1,27 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+
+function hasValidRegisterGate(value: string | undefined) {
+  const key = process.env.REGISTER_ACCESS_KEY;
+  if (!value || !key) return false;
+
+  const [expiresAt, signature, extra] = value.split(".");
+  const expiresAtNumber = Number(expiresAt);
+  if (
+    extra !== undefined ||
+    !Number.isSafeInteger(expiresAtNumber) ||
+    expiresAtNumber <= Date.now() ||
+    !signature
+  ) {
+    return false;
+  }
+
+  const expected = createHmac("sha256", key).update(expiresAt).digest();
+  const received = Buffer.from(signature, "hex");
+  return (
+    received.length === expected.length && timingSafeEqual(received, expected)
+  );
+}
 
 export function proxy(request: NextRequest) {
   const hostHeader =
@@ -10,9 +33,21 @@ export function proxy(request: NextRequest) {
   const isDashboardHost = hostname.startsWith("dash.");
   const isDashboardPath =
     pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const isRegisterPath =
+    pathname === "/register" || pathname.startsWith("/register/");
 
   if (isDashboardHost) {
     const hasRefreshToken = Boolean(request.cookies.get("refreshToken")?.value);
+
+    if (isRegisterPath) {
+      if (
+        pathname !== "/register" ||
+        !hasValidRegisterGate(request.cookies.get("registerGate")?.value)
+      ) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return NextResponse.next();
+    }
 
     if (pathname === "/login") {
       return NextResponse.redirect(new URL("/", request.url));
@@ -44,7 +79,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  if (isDashboardPath || pathname === "/login") {
+  if (isDashboardPath || pathname === "/login" || isRegisterPath) {
     return new NextResponse(null, { status: 404 });
   }
 
