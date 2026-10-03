@@ -83,7 +83,7 @@ export default function Home() {
           </div>
           <Link
             href={hero.cta.buy.link}
-            className="p-2 px-4 bg-primary rounded-3xl w-fit h-fit cursor-pointer flex justify-center items-center gap-2 text-sm shadow-[0_0px_14px_var(--primary)] relative z-20"
+            className="p-3 px-6 bg-primary rounded-3xl w-fit h-fit cursor-pointer flex justify-center items-center gap-3 text-base shadow-[0_0px_14px_var(--primary)] relative z-20"
           >
             {hero.cta.buy.text} <FaWhatsapp />
           </Link>
