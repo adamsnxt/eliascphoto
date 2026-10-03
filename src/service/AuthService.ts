@@ -199,7 +199,15 @@ export const AuthService = {
 
     if (response.ok) return;
 
-    const payload: unknown = await response.json().catch(() => null);
+    const responseText = await response.text();
+    let payload: unknown = null;
+    if (responseText) {
+      try {
+        payload = JSON.parse(responseText) as unknown;
+      } catch {
+        payload = responseText;
+      }
+    }
     const body =
       payload && typeof payload === "object"
         ? (payload as Record<string, unknown>)
@@ -208,10 +216,13 @@ export const AuthService = {
       (value): value is string =>
         typeof value === "string" && value.trim().length > 0,
     );
-    throw new AuthApiError(
-      response.status,
-      message ?? "No se pudo crear el usuario.",
-    );
+    const backendResponse =
+      typeof payload === "string"
+        ? payload
+        : payload === null
+          ? response.statusText || `HTTP ${response.status}`
+          : JSON.stringify(payload);
+    throw new AuthApiError(response.status, message ?? backendResponse);
   },
   storeTokens,
   clearTokens,
