@@ -146,11 +146,15 @@ export default function ReviewsDashboardPage() {
 
   return (
     <main className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
+      <header className="flex flex-wrap items-end justify-between gap-3 w-full ">
+        <div className="flex flex-col gap-1 w-full">
           <h1 className="text-2xl font-bold">Reseñas</h1>
-          <p className="mt-1 text-sm text-foreground/65">
+          <p className="text-sm text-foreground/65 w-full flex justify-between items-center">
             Administra las reseñas y su visibilidad pública.
+            <span>
+              Tienes {reviews.length}{" "}
+              {reviews.length === 1 ? "reseña" : "reseñas"}
+            </span>
           </p>
         </div>
       </header>
