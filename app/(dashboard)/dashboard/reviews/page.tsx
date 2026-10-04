@@ -145,8 +145,8 @@ export default function ReviewsDashboardPage() {
   };
 
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-4 pb-6 md:pb-4">
-      <header className="flex flex-wrap items-end justify-between gap-3 w-full pl-12 md:pl-0">
+    <main className="box-border flex h-full min-h-0 min-w-0 w-full flex-col gap-4 overflow-hidden p-4 pb-6 md:pb-4">
+      <header className="flex w-full shrink-0 flex-wrap items-end justify-between gap-3 pl-12 md:pl-0">
         <div className="flex flex-col gap-1 w-full">
           <h1 className="text-2xl font-bold">Reseñas</h1>
           <p className="text-sm text-foreground/65 w-full flex justify-between items-center">
@@ -168,7 +168,7 @@ export default function ReviewsDashboardPage() {
         </p>
       )}
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl p-3">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-background p-3 shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -181,7 +181,7 @@ export default function ReviewsDashboardPage() {
           <p className="p-6 text-sm text-foreground/65">Aún no hay reseñas.</p>
         ) : (
           <>
-            <ul className="grid h-full gap-3 overflow-y-auto md:hidden scrollbar-thin scrollbar-thumb-black/20 scrollbar-track-black/0">
+            <ul className="grid min-h-0 flex-1 gap-3 overflow-y-auto md:hidden scrollbar-thin scrollbar-thumb-black/20 scrollbar-track-black/0">
               {reviews.map((review) => (
                 <li
                   key={review.id}
@@ -248,7 +248,7 @@ export default function ReviewsDashboardPage() {
                 </li>
               ))}
             </ul>
-            <div className="hidden h-full overflow-auto md:block">
+            <div className="hidden min-h-0 min-w-0 flex-1 overflow-auto md:block">
               <table className="w-full min-w-232 border-collapse text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-background text-xs uppercase text-foreground/60">
                   <tr>
