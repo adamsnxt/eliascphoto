@@ -145,8 +145,8 @@ export default function ReviewsDashboardPage() {
   };
 
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6 pb-6">
-      <header className="flex flex-wrap items-end justify-between gap-3 w-full ">
+    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-4">
+      <header className="flex flex-wrap items-end justify-between gap-3 w-full pl-12 md:pl-0">
         <div className="flex flex-col gap-1 w-full">
           <h1 className="text-2xl font-bold">Reseñas</h1>
           <p className="text-sm text-foreground/65 w-full flex justify-between items-center">

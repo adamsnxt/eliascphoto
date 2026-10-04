@@ -10,7 +10,7 @@ import { logoutDashboard } from "@/src/actions/AuthActions";
 const ROUTES = [
   { href: "/newsletter", label: "Newsletter" },
   { href: "/reviews", label: "Reseñas" },
-  { href: "/profile", label: "Trunos" },
+  { href: "/appointments", label: "Trunos" },
 ];
 export const Sidebar = () => {
   const pathname = usePathname();
