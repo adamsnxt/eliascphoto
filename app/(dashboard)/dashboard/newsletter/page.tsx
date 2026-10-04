@@ -32,7 +32,7 @@ export default function NewsletterDashboardPage() {
   }, []);
 
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-4">
+    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-4 pb-6 md:pb-4">
       <header className="flex flex-wrap items-end justify-between gap-3 pl-12 md:pl-0">
         <div>
           <h1 className="text-2xl font-bold">Suscriptores</h1>

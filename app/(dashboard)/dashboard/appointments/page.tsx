@@ -1,6 +1,6 @@
 export default function AppointmentsPage() {
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col p-4 gap-4">
+    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col p-4 gap-4 pb-6 md:pb-4">
       <header className="flex flex-wrap items-end justify-between gap-3 pl-12 md:pl-0">
         <div>
           <h1 className="text-2xl font-bold">Turnos</h1>
