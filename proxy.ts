@@ -23,6 +23,27 @@ function hasValidRegisterGate(value: string | undefined) {
   );
 }
 
+function isDevelopmentLanIpv4(hostname: string) {
+  if (process.env.NODE_ENV !== "development") return false;
+
+  const octets = hostname.split(".").map(Number);
+  if (
+    octets.length !== 4 ||
+    octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)
+  ) {
+    return false;
+  }
+
+  const [first, second] = octets;
+  return (
+    first === 10 ||
+    first === 127 ||
+    (first === 169 && second === 254) ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168)
+  );
+}
+
 export function proxy(request: NextRequest) {
   const hostHeader =
     request.headers.get("x-forwarded-host") ??
@@ -30,7 +51,8 @@ export function proxy(request: NextRequest) {
     request.nextUrl.hostname;
   const hostname = hostHeader.split(",")[0].trim().split(":")[0].toLowerCase();
   const pathname = request.nextUrl.pathname;
-  const isDashboardHost = hostname.startsWith("dash.");
+  const isDashboardHost =
+    hostname.startsWith("dash.") || isDevelopmentLanIpv4(hostname);
   const isDashboardPath =
     pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const isRegisterPath =
