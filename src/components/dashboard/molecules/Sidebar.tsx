@@ -33,6 +33,10 @@ export const Sidebar = () => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
   const sidebarPanel = (
     <div className="flex h-full w-full flex-col gap-4 rounded-4xl bg-background p-4 shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]">
       <div className="flex w-full items-center gap-3">

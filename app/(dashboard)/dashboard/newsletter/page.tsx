@@ -32,7 +32,7 @@ export default function NewsletterDashboardPage() {
   }, []);
 
   return (
-    <main className="flex h-full min-h-0 min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6">
+    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-3 pt-16 sm:gap-5 sm:p-6 sm:pt-16 md:pt-6 pb-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Suscriptores</h1>
@@ -45,7 +45,7 @@ export default function NewsletterDashboardPage() {
         </p>
       </header>
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl">
+      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl p-3">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -60,7 +60,7 @@ export default function NewsletterDashboardPage() {
           </p>
         ) : (
           <>
-            <ul className="h-full overflow-y-auto divide-y divide-black/10 p-3 md:hidden">
+            <ul className="h-full overflow-y-auto divide-y divide-black/10 px-3 md:hidden scrollbar-thin scrollbar-thumb-black/20 scrollbar-track-black/0">
               {contacts.map((contact) => (
                 <li
                   key={contact.id}
