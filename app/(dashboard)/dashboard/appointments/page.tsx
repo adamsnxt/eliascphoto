@@ -4,7 +4,7 @@ import { Appointment, CreateAppointmentInput } from "@/src/types/Appointments";
 import { ConsultationType } from "@/src/types/ConsultationTypes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { IoAdd, IoClose, IoSaveOutline, IoLogoUsd } from "react-icons/io5";
+import { IoClose, IoSaveOutline, IoLogoUsd } from "react-icons/io5";
 import { ThinkingOrb } from "thinking-orbs";
 import { MdOutlineCancel } from "react-icons/md";
 const EMPTY_FORM = {
@@ -19,8 +19,13 @@ import {
   cancelAppointment,
   createAppointment,
   markAppointmentPaid,
+  rescheduleAppointment,
 } from "@/src/actions/AppointmentActions";
 import { AppointmentTimePicker } from "@/src/components/dashboard/molecules/AppointmentTimePicker";
+import {
+  findAppointmentConflict,
+  getAppointmentLocalTime,
+} from "@/src/components/dashboard/molecules/appointmentAvailability";
 
 export default function AppointmentsPage() {
   const [consultationTypes, setConsultationTypes] = useState<
@@ -36,65 +41,57 @@ export default function AppointmentsPage() {
   const [appointmentsRefreshKey, setAppointmentsRefreshKey] = useState(0);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const [selectedDateAppointments, setSelectedDateAppointments] = useState<
     Appointment[]
   >([]);
-  const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const closeDialog = () => {
     setIsDialogOpen(false);
-    setIsCreating(false);
     setSelectedAppointment(null);
-    setSelectedDate(null);
-    setSelectedDateAppointments([]);
     setForm(EMPTY_FORM);
     setError(null);
     setIsEditing(false);
   };
 
-  const openDateAppointments = (date: string, appointments: Appointment[]) => {
-    setIsCreating(false);
-    setSelectedDate(date);
+  const openDay = (date: string, appointments: Appointment[]) => {
     setSelectedDateAppointments(appointments);
-    setSelectedAppointment(null);
-    setError(null);
-
     setForm((current) => ({
       ...current,
       date,
     }));
-
-    setIsDialogOpen(true);
   };
 
-  const openCreateDialog = (date?: string) => {
-    setIsCreating(true);
+  const openCreateDialog = (date: string, appointments: Appointment[]) => {
+    setSelectedDateAppointments(appointments);
     setSelectedAppointment(null);
+    setIsEditing(false);
 
     setForm({
       ...EMPTY_FORM,
-      date: date ?? selectedDate ?? "",
+      date,
     });
 
     setError(null);
     setIsDialogOpen(true);
   };
 
-  const openEditDialog = (appointment: Appointment) => {
-    setIsCreating(false);
+  const openEditDialog = (
+    appointment: Appointment,
+    date: string,
+    appointments: Appointment[],
+  ) => {
+    setSelectedDateAppointments(appointments);
     setIsEditing(true);
-    setSelectedDateAppointments([]);
     setSelectedAppointment(appointment);
 
     setForm({
       email: appointment.email,
       instagram: appointment.instagram,
       consultationTypeId: appointment.consultationTypeId,
-      date: appointment.date,
-      startTime: appointment.startTime,
+      date,
+      startTime: getAppointmentLocalTime(appointment),
     });
 
     setError(null);
@@ -121,37 +118,21 @@ export default function AppointmentsPage() {
     };
   }, []);
 
-  const timeToMinutes = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-
-    return hours * 60 + minutes;
-  };
-
-  const isoToMinutes = (iso: string) => {
-    const date = new Date(iso);
-
-    return date.getHours() * 60 + date.getMinutes();
-  };
-
   const selectedConsultationType = consultationTypes.find(
     (type) => type.id === form.consultationTypeId,
   );
 
   const isTimeOccupied = (startTime: string) => {
-    if (!selectedConsultationType || !startTime) {
-      return false;
-    }
-
-    const newStart = timeToMinutes(startTime);
-
-    const newEnd = newStart + selectedConsultationType.durationMinutes;
-
-    return selectedDateAppointments.some((appointment) => {
-      const existingStart = isoToMinutes(appointment.startAt);
-      const existingEnd = isoToMinutes(appointment.endAt);
-
-      return newStart < existingEnd && newEnd > existingStart;
-    });
+    return Boolean(
+      selectedConsultationType &&
+        findAppointmentConflict(
+          form.date,
+          startTime,
+          selectedConsultationType.durationMinutes,
+          selectedDateAppointments,
+          selectedAppointment?.id,
+        ),
+    );
   };
 
   const paid = async (id: number) => {
@@ -203,8 +184,6 @@ export default function AppointmentsPage() {
   };
 
   const submitNewAppointment = async () => {
-    console.log("estas por enviar:" + JSON.stringify(form));
-
     if (isTimeOccupied(form.startTime)) {
       setError("Ese horario se solapa con otro turno.");
       return;
@@ -213,7 +192,17 @@ export default function AppointmentsPage() {
     setIsSaving(true);
 
     try {
-      await createAppointment(form);
+      const result = isEditing && selectedAppointment
+        ? await rescheduleAppointment(selectedAppointment.id, {
+            date: form.date,
+            startTime: form.startTime,
+          })
+        : await createAppointment(form);
+
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
 
       setAppointmentsRefreshKey((prev) => prev + 1);
 
@@ -224,10 +213,6 @@ export default function AppointmentsPage() {
       setIsSaving(false);
     }
   };
-
-  useEffect(() => {
-    console.log("FORM ACTUAL:", form);
-  }, [form]);
 
   return (
     <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col p-4 gap-4 pb-6 md:pb-4">
@@ -240,7 +225,9 @@ export default function AppointmentsPage() {
       <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.3)] sm:rounded-4xl p-4">
         <FullCalendar
           appointmentsRefreshKey={appointmentsRefreshKey}
-          openDateAppointments={openDateAppointments}
+          onOpenDay={openDay}
+          onCreateAppointment={openCreateDialog}
+          onEditAppointment={openEditDialog}
         />
       </section>
       <AnimatePresence>
@@ -263,53 +250,7 @@ export default function AppointmentsPage() {
               transition={{ type: "spring", stiffness: 280, damping: 26 }}
               onMouseDown={(event) => event.stopPropagation()}
             >
-              {selectedDateAppointments.length > 0 &&
-              !selectedAppointment &&
-              !isCreating ? (
-                <div className="flex flex-col gap-3">
-                  <p className="text-sm text-foreground/65">
-                    Ya existen {selectedDateAppointments.length} turnos para
-                    este día.
-                  </p>
-
-                  <div className="flex flex-col gap-2">
-                    {selectedDateAppointments.map((appointment) => (
-                      <button
-                        key={appointment.id}
-                        type="button"
-                        onClick={() => openEditDialog(appointment)}
-                        className="flex items-center justify-between rounded-xl bg-white/60 p-4 text-left shadow transition hover:scale-[1.01]"
-                      >
-                        <div>
-                          <p className="font-semibold">{appointment.email}</p>
-
-                          <p className="text-sm text-foreground/60">
-                            {appointment.consultationTypeName}
-                          </p>
-                        </div>
-
-                        <span className="font-semibold text-primary">
-                          {appointment.startAt &&
-                            new Intl.DateTimeFormat("es-AR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }).format(new Date(appointment.startAt))}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => openCreateDialog(selectedDate ?? undefined)}
-                    className="mt-2 flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 font-semibold text-white"
-                  >
-                    <IoAdd size={20} />
-                    Crear nuevo turno
-                  </button>
-                </div>
-              ) : (
-                <>
+              <>
                   <div className="mb-6 flex items-start justify-between gap-4">
                     <div>
                       <h2
@@ -407,29 +348,16 @@ export default function AppointmentsPage() {
                             return;
                           }
 
-                          const newStart = timeToMinutes(form.startTime);
-
-                          const newEnd =
-                            newStart + newConsultationType.durationMinutes;
-
-                          const hasOverlap = selectedDateAppointments.some(
-                            (appointment) => {
-                              const existingStart = isoToMinutes(
-                                appointment.startAt,
-                              );
-
-                              const existingEnd = isoToMinutes(
-                                appointment.endAt,
-                              );
-
-                              return (
-                                newStart < existingEnd && newEnd > existingStart
-                              );
-                            },
+                          const hasOverlap = findAppointmentConflict(
+                            form.date,
+                            form.startTime,
+                            newConsultationType.durationMinutes,
+                            selectedDateAppointments,
+                            selectedAppointment?.id,
                           );
 
                           setError(
-                            hasOverlap
+                            hasOverlap !== null
                               ? "Ese horario no está disponible para esta duración."
                               : null,
                           );
@@ -450,10 +378,12 @@ export default function AppointmentsPage() {
                     )}
                     <AppointmentTimePicker
                       value={form.startTime}
+                      date={form.date}
                       appointments={selectedDateAppointments}
                       durationMinutes={
                         selectedConsultationType?.durationMinutes ?? 0
                       }
+                      excludedAppointmentId={selectedAppointment?.id}
                       onChange={(startTime) =>
                         setForm((current) => ({
                           ...current,
@@ -549,8 +479,7 @@ export default function AppointmentsPage() {
                       </div>
                     </div>
                   </form>
-                </>
-              )}
+              </>
             </motion.section>
           </motion.div>
         )}

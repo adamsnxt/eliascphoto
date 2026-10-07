@@ -3,22 +3,20 @@
 import { useMemo, useState } from "react";
 import { IoChevronDown, IoTimeOutline } from "react-icons/io5";
 import { Appointment } from "@/src/types/Appointments";
+import { findAppointmentConflict } from "./appointmentAvailability";
 
 interface AppointmentTimePickerProps {
   value: string;
+  date: string;
   appointments: Appointment[];
   durationMinutes: number;
+  excludedAppointmentId?: number;
   onChange: (startTime: string) => void;
 }
 
 const START_HOUR = 9;
 const END_HOUR = 23;
 const SLOT_MINUTES = 30;
-
-const timeToMinutes = (time: string) => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-};
 
 const minutesToTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
@@ -41,34 +39,13 @@ const formatTime = (time: string) => {
 
 export function AppointmentTimePicker({
   value,
+  date,
   appointments,
   durationMinutes,
+  excludedAppointmentId,
   onChange,
 }: AppointmentTimePickerProps) {
   const [open, setOpen] = useState(false);
-
-  const occupiedRanges = useMemo(
-    () =>
-      appointments.map((appointment) => ({
-        id: appointment.id,
-        start:
-          new Date(appointment.startAt).getHours() * 60 +
-          new Date(appointment.startAt).getMinutes(),
-        end:
-          new Date(appointment.endAt).getHours() * 60 +
-          new Date(appointment.endAt).getMinutes(),
-        name: appointment.consultationTypeName,
-      })),
-    [appointments],
-  );
-
-  const isOccupied = (startMinutes: number) => {
-    const endMinutes = startMinutes + durationMinutes;
-
-    return occupiedRanges.some(
-      (range) => startMinutes < range.end && endMinutes > range.start,
-    );
-  };
 
   const slots = useMemo(() => {
     const result: string[] = [];
@@ -85,9 +62,17 @@ export function AppointmentTimePicker({
   }, []);
 
   const handleSelect = (time: string) => {
-    const minutes = timeToMinutes(time);
-
-    if (isOccupied(minutes)) return;
+    if (
+      findAppointmentConflict(
+        date,
+        time,
+        durationMinutes,
+        appointments,
+        excludedAppointmentId,
+      )
+    ) {
+      return;
+    }
 
     onChange(time);
     setOpen(false);
@@ -127,15 +112,15 @@ export function AppointmentTimePicker({
 
           <div className="max-h-72 overflow-y-auto p-2">
             {slots.map((time) => {
-              const minutes = timeToMinutes(time);
-              const occupied = isOccupied(minutes);
-              const selected = value === time;
-
-              const occupiedAppointment = occupiedRanges.find(
-                (range) =>
-                  minutes < range.end &&
-                  minutes + durationMinutes > range.start,
+              const conflict = findAppointmentConflict(
+                date,
+                time,
+                durationMinutes,
+                appointments,
+                excludedAppointmentId,
               );
+              const occupied = Boolean(conflict);
+              const selected = value === time;
 
               return (
                 <button
@@ -154,9 +139,9 @@ export function AppointmentTimePicker({
                 >
                   <span>{time}</span>
 
-                  {occupied && occupiedAppointment ? (
+                  {conflict ? (
                     <span className="text-xs">
-                      Ocupado · {occupiedAppointment.name}
+                      Ocupado · {conflict.consultationTypeName}
                     </span>
                   ) : selected ? (
                     <span className="text-xs">Seleccionado</span>

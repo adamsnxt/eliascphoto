@@ -11,7 +11,7 @@ export interface Appointment {
   consultationTypeId: number;
   consultationTypeName: string;
   date: string;
-  startTime: string;
+  startTime?: string;
   startAt: string;
   endAt: string;
   priceUsd: number;
