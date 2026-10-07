@@ -8,9 +8,10 @@ import { IoLogOutOutline, IoMenuOutline } from "react-icons/io5";
 import { logoutDashboard } from "@/src/actions/AuthActions";
 
 const ROUTES = [
-  { href: "/newsletter", label: "Newsletter" },
-  { href: "/reviews", label: "Reseñas" },
   { href: "/appointments", label: "Trunos" },
+  { href: "/services", label: "Servicios" },
+  { href: "/reviews", label: "Reseñas" },
+  { href: "/newsletter", label: "Newsletter" },
 ];
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -33,10 +34,6 @@ export const Sidebar = () => {
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   const sidebarPanel = (
     <div className="flex h-full w-full flex-col gap-4 rounded-4xl bg-background p-4 shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]">
       <div className="flex w-full items-center gap-3">
@@ -52,6 +49,7 @@ export const Sidebar = () => {
               <Link
                 href="/dashboard"
                 aria-label="Volver al panel"
+                onClick={() => setIsOpen(false)}
                 className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-primary"
               >
                 <IoIosArrowBack />
@@ -127,7 +125,7 @@ export const Sidebar = () => {
             <motion.button
               type="button"
               aria-label="Cerrar menú"
-              className="fixed inset-0 z-40 bg-black/35 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 backdrop-blur-sm md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

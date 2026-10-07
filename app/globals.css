@@ -21,3 +21,57 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =========================
+   React Big Calendar
+   ========================= */
+
+.rbc-today {
+  background-color: color-mix(
+    in srgb,
+    var(--primary) 15%,
+    transparent
+  ) !important;
+}
+
+/* Botones activos */
+.rbc-toolbar button.rbc-active {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--foreground) !important;
+}
+
+/* Hover de botones */
+.rbc-toolbar button:hover,
+.rbc-toolbar button:focus {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Eventos */
+.rbc-event {
+  color: var(--foreground);
+}
+
+.rbc-event.rbc-selected {
+  background-color: var(--primary) !important;
+}
+
+/* Selección de slots */
+.rbc-slot-selection {
+  background-color: color-mix(
+    in srgb,
+    var(--primary) 30%,
+    transparent
+  ) !important;
+}
+
+/* Background events */
+.rbc-day-slot .rbc-background-event {
+  background-color: var(--primary) !important;
+}
+
+/* Indicador de hora actual */
+.rbc-current-time-indicator {
+  background-color: var(--primary) !important;
+}
