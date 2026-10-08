@@ -16,10 +16,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ELIASCPHOTO",
-  description: "",
+  title: "EliasCPhoto | Color Grading y Edición de Video",
+  description:
+    "Aprendé color grading y edición de video con EliasCPhoto. Asesorías 1 a 1 para mejorar el color y llevar tus fotos y videos a otro nivel.",
   icons: {
-    icon: "/logo/logo.png",
+    icon: [
+      {
+        url: "/fav/favIconL.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/fav/favIconD.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
   },
 };
 

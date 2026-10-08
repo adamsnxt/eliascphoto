@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "ELIASCPHOTO",
-    short_name: "ELIASCPHOTO",
-    description: "Panel de administración de ELIASCPHOTO",
+    name: "EliasCPhoto",
+    short_name: "EliasCPhoto",
+    description: "Panel de administración de EliasCPhoto",
     start_url: "/",
     display: "standalone",
     background_color: "#fff2e6",
