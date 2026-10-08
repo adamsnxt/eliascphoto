@@ -1,55 +1,88 @@
 "use client";
 
-import React, { useState } from "react";
 import Image from "next/image";
-import { GoArrowUpRight } from "react-icons/go";
-import { HiMenu, HiX } from "react-icons/hi";
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
+import { AnimatePresence, motion } from "framer-motion";
+const ROUTES = [
+  {
+    label: "Herramientas",
+    path: "/tools",
+  },
+];
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const path = usePathname();
 
   return (
-    <nav className="z-20 w-[calc(100%-2rem)] max-w-3xl h-16 sm:h-20 sticky top-3 sm:top-5 flex justify-between px-3 sm:px-5 py-2 sm:p-3 items-center bg-background shadow-md rounded-2xl sm:rounded-3xl">
-      <div className="flex shrink-0 justify-center items-center h-full aspect-square">
-        <Image
-          src="/logo/logo.png"
-          alt="Logo"
-          width={80}
-          height={80}
-          className="h-full w-auto object-contain"
-        />
-      </div>
-      <div className="hidden sm:flex flex-1 justify-around text-base md:text-xl">
-        <p className="p-2 px-4 shadow-[inset_0_2px_4px_rgba(205,192,180)] rounded-2xl">
-          Proyectos
-        </p>
-        <p className="p-2 px-4 rounded-xl">Sobre mí</p>
-        <p className="p-2 px-4 rounded-xl">Contacto</p>
-      </div>
-      <button className="hidden sm:flex p-2 px-4 bg-primary rounded-3xl w-fit h-fit cursor-pointer justify-center items-center gap-2 text-sm shadow">
-        Turnos <GoArrowUpRight />
-      </button>
-      <button
-        type="button"
-        className="sm:hidden p-2 rounded-xl hover:bg-white/10"
-        aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-        aria-expanded={menuOpen}
-        aria-controls="mobile-navigation"
-        onClick={() => setMenuOpen((open) => !open)}
-      >
-        {menuOpen ? <HiX size={22} /> : <HiMenu size={22} />}
-      </button>
-      {menuOpen && (
-        <div
-          id="mobile-navigation"
-          className="absolute top-[calc(100%+0.5rem)] left-0 right-0 flex flex-col gap-1 p-3 bg-background shadow-md rounded-2xl sm:hidden"
+    <nav className="z-50 sticky top-0 flex justify-center items-center w-full pt-5 px-3">
+      <div className="max-w-3xl flex justify-between px-3 sm:px-5 py-2 sm:p-3 items-center dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)] rounded-3xl w-full sm:h-20 h-16 bg-background">
+        <AnimatePresence mode="wait">
+          {path !== "/" ? (
+            <motion.div
+              key="back"
+              initial={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="flex shrink-0 justify-center items-center h-full"
+            >
+              <Link
+                href="/"
+                className="p-2 px-4 rounded-full bg-background dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)] flex gap-2 justify-center items-center"
+              >
+                <IoIosArrowBack />
+                volver
+              </Link>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="logo"
+              initial={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="flex shrink-0 justify-center items-center h-full aspect-square"
+            >
+              <Image
+                src="/logo/logoLigth.png"
+                alt="Logo"
+                width={80}
+                height={80}
+                className="h-full w-auto object-contain hidden dark:block"
+              />
+              <Image
+                src="/logo/logo.png"
+                alt="Logo"
+                width={80}
+                height={80}
+                className="h-full w-auto object-contain dark:hidden"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          animate={{
+            x: path !== "/" ? 20 : 0,
+          }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="w-full text-base md:text-xl flex gap-2 justify-center items-center"
         >
-          <a href="#proyectos" onClick={() => setMenuOpen(false)} className="p-3 rounded-xl hover:bg-white/10">Proyectos</a>
-          <a href="#sobre-mi" onClick={() => setMenuOpen(false)} className="p-3 rounded-xl hover:bg-white/10">Sobre mí</a>
-          <a href="#contacto" onClick={() => setMenuOpen(false)} className="p-3 rounded-xl hover:bg-white/10">Contacto</a>
-          <a href="#turnos" onClick={() => setMenuOpen(false)} className="p-3 bg-primary rounded-xl flex items-center justify-center gap-2">Turnos <GoArrowUpRight /></a>
-        </div>
-      )}
+          {ROUTES.map((route) => (
+            <Link
+              key={route.path}
+              href={route.path}
+              className="p-2 px-4 bg-background dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.2)] rounded-2xl"
+            >
+              {route.label}
+            </Link>
+          ))}
+        </motion.div>
+      </div>
     </nav>
   );
 };

@@ -16,6 +16,24 @@ import { Review } from "@/src/types/Reviews";
 import { getReviews } from "@/src/actions";
 import Link from "next/link";
 
+const RenderAccentText = ({ text }: { text: string }) => {
+  const parts = text.split(/\*(.*?)\*/g);
+
+  return (
+    <>
+      {parts.map((part, index) =>
+        index % 2 === 1 ? (
+          <span key={index} className="text-primary">
+            {part}
+          </span>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+};
+
 export default function Home() {
   const progress = useMotionValue(0);
   const x = useTransform(progress, (value) => `${-50 * value}%`);
@@ -107,15 +125,8 @@ export default function Home() {
     <>
       <main className="relative flex h-dvh flex-col items-center overflow-hidden">
         {/* <Navbar /> */}
-        <Image
-          src="/logo/logo.png"
-          alt="Logo"
-          width={80}
-          height={80}
-          className=" absolute top-3 sm:top-5 left-3 sm:left-5 z-20"
-        />
         <div className="flex w-full min-h-0 flex-1 flex-col items-center gap-3 px-3 py-3 sm:gap-5 sm:px-6 sm:py-5">
-          <div className="relative flex min-h-0 w-full max-w-7xl flex-3 flex-col items-center justify-center gap-4 overflow-hidden rounded-4xl bg-flagGradient p-6 shadow-2xl sm:gap-5 sm:rounded-[4rem] sm:p-10 md:p-16 lg:rounded-[8rem] lg:p-24">
+          <div className="relative flex min-h-0 w-full max-w-7xl flex-3 flex-col items-center justify-center gap-4 overflow-hidden rounded-4xl bg-foreground p-6 shadow-2xl sm:gap-5 sm:rounded-[4rem] sm:p-10 md:p-16 lg:rounded-[8rem] lg:p-24 text-background">
             <motion.div
               className="w-full aspect-square absolute top-3/5 left-1/2 -translate-x-1/2 bg-primary rounded-full blur-[100px] z-10"
               initial={{
@@ -132,15 +143,15 @@ export default function Home() {
               }}
             />
 
-            <div className="text-white text-xs p-2 px-4 bg-red-600 absolute top-5 left-1/2 -translate-x-1/2 rounded-3xl shadow-lg">
+            {/* <div className="text-white text-xs p-2 px-4 bg-red-600 absolute top-5 left-1/2 -translate-x-1/2 rounded-3xl shadow-lg">
               Nuevo
-            </div>
+            </div> */}
             <div className="relative z-10 w-full max-w-3xl px-1">
-              <h1 className="text-center text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+              <h1 className="text-center text-3xl font-bold  sm:text-4xl md:text-5xl">
                 {hero.title}
               </h1>
-              <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-white sm:text-base">
-                {hero.description}{" "}
+              <p className="text-center whitespace-pre-line">
+                <RenderAccentText text={hero.description} />
               </p>
             </div>
             <Link
@@ -197,7 +208,7 @@ export default function Home() {
                         delay: Math.min(index * 0.05 + copy * 0.08, 0.4),
                         ease: [0.22, 1, 0.36, 1],
                       }}
-                      className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 cursor-pointer flex-col rounded-2xl bg-background p-4 text-left shadow-md transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-80 sm:p-5"
+                      className="flex h-full min-h-0 w-[min(82vw,22rem)] shrink-0 cursor-pointer flex-col rounded-2xl p-4 text-left dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)] transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-80 sm:p-5"
                     >
                       <p className="shrink-0 text-sm font-semibold sm:text-base">
                         {reseña.name}

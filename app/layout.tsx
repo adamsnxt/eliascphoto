@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Toaster } from "sileo";
+import Navbar from "@/src/components/molecules/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +27,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased h-full scrollbar-none!`}
     >
-      <body className="h-full flex flex-col overflow-hidden">
+      <body className="h-full flex flex-col ">
         <Toaster
           position="top-center"
           options={{
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             },
           }}
         />
+        <Navbar />
         {children}
       </body>
     </html>
