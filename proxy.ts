@@ -58,7 +58,7 @@ export function proxy(request: NextRequest) {
   const isRegisterPath =
     pathname === "/register" || pathname.startsWith("/register/");
 
-  if (false) {
+  if (isDashboardHost) {
     const hasRefreshToken = Boolean(request.cookies.get("refreshToken")?.value);
 
     if (isRegisterPath) {
