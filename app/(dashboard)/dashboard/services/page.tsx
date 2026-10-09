@@ -6,6 +6,10 @@ import {
   getManagedConsultationTypes,
   updateConsultationType,
 } from "@/src/actions/ConsultationTypeActions";
+import {
+  MainDashboardLayout,
+  SectionDashboardLayout,
+} from "@/src/components/dashboard/layouts";
 import type {
   ConsultationType,
   ConsultationTypeInput,
@@ -193,7 +197,7 @@ export default function ServicesDashboardPage() {
   };
 
   return (
-    <main className="flex h-full max-h-screen min-h-0 min-w-0 w-full flex-col gap-4 overflow-hidden p-4 pb-6 md:gap-5 md:pb-4">
+    <MainDashboardLayout>
       <header className="flex w-full gap-3 pl-12 md:pl-0">
         <div className="flex w-full justify-between items-center ">
           <div className=" flex flex-col flex-2">
@@ -221,7 +225,7 @@ export default function ServicesDashboardPage() {
         </p>
       )}
 
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-background p-3 shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl">
+      <SectionDashboardLayout>
         {isLoading ? (
           <div className="flex h-full w-full items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -414,7 +418,7 @@ export default function ServicesDashboardPage() {
             </div>
           </>
         )}
-      </section>
+      </SectionDashboardLayout>
 
       <AnimatePresence>
         {isDialogOpen && (
@@ -561,6 +565,6 @@ export default function ServicesDashboardPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </main>
+    </MainDashboardLayout>
   );
 }

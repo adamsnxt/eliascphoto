@@ -1,5 +1,9 @@
 "use client";
 import { GetBrevoContacts } from "@/src/actions/BrevoActions";
+import {
+  MainDashboardLayout,
+  SectionDashboardLayout,
+} from "@/src/components/dashboard/layouts";
 import { Contact } from "@/src/types/Brevo";
 import { useEffect, useState } from "react";
 import { ThinkingOrb } from "thinking-orbs";
@@ -32,7 +36,7 @@ export default function NewsletterDashboardPage() {
   }, []);
 
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col gap-4 p-4 pb-6 md:pb-4">
+    <MainDashboardLayout>
       <header className="flex flex-wrap items-end justify-between gap-3 pl-12 md:pl-0">
         <div>
           <h1 className="text-2xl font-bold">Suscriptores</h1>
@@ -45,7 +49,7 @@ export default function NewsletterDashboardPage() {
         </p>
       </header>
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.2)] sm:rounded-4xl p-3">
+      <SectionDashboardLayout>
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center p-4">
             <ThinkingOrb state="connecting" size={64} theme="light" />
@@ -107,7 +111,7 @@ export default function NewsletterDashboardPage() {
             </div>
           </>
         )}
-      </section>
-    </main>
+      </SectionDashboardLayout>
+    </MainDashboardLayout>
   );
 }

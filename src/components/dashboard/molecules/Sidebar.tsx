@@ -35,7 +35,7 @@ export const Sidebar = () => {
   }, [isOpen]);
 
   const sidebarPanel = (
-    <div className="flex h-full w-full flex-col gap-4 rounded-4xl bg-background p-4 shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]">
+    <div className="flex h-full w-full flex-col gap-4 rounded-4xl bg-background p-4 shadow-[0_0_10px_0px_rgba(0,0,0,0.3)] dark:shadow-[0_0_10px_0px_rgba(0,0,0,0.8)]">
       <div className="flex w-full items-center gap-3">
         <AnimatePresence initial={false}>
           {canGoBack && (
@@ -68,14 +68,14 @@ export const Sidebar = () => {
         </motion.h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto border-t border-gray-300 p-4">
+      <div className="flex-1 overflow-y-auto border-t border-foreground/10 p-4">
         <ul>
           {ROUTES.map((route) => (
             <li key={route.href} className="mb-2">
               <Link
                 href={route.href}
                 onClick={() => setIsOpen(false)}
-                className="block rounded-lg px-2 py-2 text-lg hover:bg-black/5"
+                className={`block rounded-lg px-2 py-2 text-lg hover:bg-foreground/5 transition-all duration-300 ${pathname === route.href ? "bg-primary hover:bg-primary/80" : ""}`}
               >
                 {route.label}
               </Link>
@@ -84,7 +84,7 @@ export const Sidebar = () => {
         </ul>
       </div>
 
-      <div className="flex items-center justify-between border-t border-gray-300 pt-3">
+      <div className="flex items-center justify-between border-t border-foreground/10  pt-3">
         <span className="text-sm text-foreground/65">Panel de control</span>
         <form action={logoutDashboard}>
           <button

@@ -26,6 +26,10 @@ import {
   findAppointmentConflict,
   getAppointmentLocalTime,
 } from "@/src/components/dashboard/molecules/appointmentAvailability";
+import {
+  SectionDashboardLayout,
+  MainDashboardLayout,
+} from "@/src/components/dashboard/layouts";
 
 export default function AppointmentsPage() {
   const [consultationTypes, setConsultationTypes] = useState<
@@ -125,13 +129,13 @@ export default function AppointmentsPage() {
   const isTimeOccupied = (startTime: string) => {
     return Boolean(
       selectedConsultationType &&
-        findAppointmentConflict(
-          form.date,
-          startTime,
-          selectedConsultationType.durationMinutes,
-          selectedDateAppointments,
-          selectedAppointment?.id,
-        ),
+      findAppointmentConflict(
+        form.date,
+        startTime,
+        selectedConsultationType.durationMinutes,
+        selectedDateAppointments,
+        selectedAppointment?.id,
+      ),
     );
   };
 
@@ -192,12 +196,13 @@ export default function AppointmentsPage() {
     setIsSaving(true);
 
     try {
-      const result = isEditing && selectedAppointment
-        ? await rescheduleAppointment(selectedAppointment.id, {
-            date: form.date,
-            startTime: form.startTime,
-          })
-        : await createAppointment(form);
+      const result =
+        isEditing && selectedAppointment
+          ? await rescheduleAppointment(selectedAppointment.id, {
+              date: form.date,
+              startTime: form.startTime,
+            })
+          : await createAppointment(form);
 
       if (!result.success) {
         setError(result.error);
@@ -215,21 +220,21 @@ export default function AppointmentsPage() {
   };
 
   return (
-    <main className="flex h-full max-h-screen overflow-hidden min-w-0 w-full flex-col p-4 gap-4 pb-6 md:pb-4">
+    <MainDashboardLayout>
       <header className="flex items-end justify-between gap-3 pl-12 md:pl-0">
         <div>
           <h1 className="text-2xl font-bold">Turnos</h1>
           <p className="mt-1 text-sm text-foreground/65">Gestión de turnos</p>
         </div>
       </header>
-      <section className="min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-[0_0_10px_0px_rgba(0,0,0,0.3)] sm:rounded-4xl p-4">
+      <SectionDashboardLayout>
         <FullCalendar
           appointmentsRefreshKey={appointmentsRefreshKey}
           onOpenDay={openDay}
           onCreateAppointment={openCreateDialog}
           onEditAppointment={openEditDialog}
         />
-      </section>
+      </SectionDashboardLayout>
       <AnimatePresence>
         {isDialogOpen && (
           <motion.div
@@ -251,239 +256,235 @@ export default function AppointmentsPage() {
               onMouseDown={(event) => event.stopPropagation()}
             >
               <>
-                  <div className="mb-6 flex items-start justify-between gap-4">
-                    <div>
-                      <h2
-                        id="consultation-type-dialog-title"
-                        className="text-xl font-bold"
-                      >
-                        {selectedAppointment ? "Editar" : "Nuevo"}
-                      </h2>
-                      <p className="mt-1 text-sm text-foreground/65">
-                        {selectedAppointment ? "Editar turno" : "Nuevo turno"}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Cerrar"
-                      disabled={isSaving}
-                      onClick={() => closeDialog()}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition hover:bg-black/5 disabled:opacity-40"
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <div>
+                    <h2
+                      id="consultation-type-dialog-title"
+                      className="text-xl font-bold"
                     >
-                      <IoClose size={20} />
-                    </button>
-                  </div>
-
-                  <form
-                    className="flex flex-col gap-4"
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      void submitNewAppointment();
-                    }}
-                  >
-                    <p>
-                      Editar o crear un turno{" "}
-                      {form.date &&
-                        new Intl.DateTimeFormat("es", {
-                          dateStyle: "medium",
-                        }).format(new Date(form.date))}
+                      {selectedAppointment ? "Editar" : "Nuevo"}
+                    </h2>
+                    <p className="mt-1 text-sm text-foreground/65">
+                      {selectedAppointment ? "Editar turno" : "Nuevo turno"}
                     </p>
-                    <label className="flex flex-col gap-1.5 text-sm font-medium">
-                      Mail
-                      <input
-                        value={form.email}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            email: event.target.value,
-                          }))
-                        }
-                        required
-                        maxLength={120}
-                        className="h-11 rounded-xl border border-black/15 bg-white/60 px-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1.5 text-sm font-medium">
-                      Instagram
-                      <input
-                        value={form.instagram}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            instagram: event.target.value,
-                          }))
-                        }
-                        required
-                        maxLength={120}
-                        className="h-11 rounded-xl border border-black/15 bg-white/60 px-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      />
-                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Cerrar"
+                    disabled={isSaving}
+                    onClick={() => closeDialog()}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition hover:bg-black/5 disabled:opacity-40"
+                  >
+                    <IoClose size={20} />
+                  </button>
+                </div>
 
-                    {isConsultationTypesLoading ? (
-                      <div className="w-full flex justify-center items-center">
-                        <ThinkingOrb
-                          state="connecting"
-                          size={20}
-                          theme="light"
-                        />
-                      </div>
-                    ) : (
-                      <select
-                        name="consultationType"
-                        value={form.consultationTypeId || ""}
-                        onChange={(e) => {
-                          const consultationTypeId = Number(e.target.value);
-
-                          setForm((prev) => ({
-                            ...prev,
-                            consultationTypeId,
-                          }));
-
-                          const newConsultationType = consultationTypes.find(
-                            (type) => type.id === consultationTypeId,
-                          );
-
-                          if (!newConsultationType || !form.startTime) {
-                            setError(null);
-                            return;
-                          }
-
-                          const hasOverlap = findAppointmentConflict(
-                            form.date,
-                            form.startTime,
-                            newConsultationType.durationMinutes,
-                            selectedDateAppointments,
-                            selectedAppointment?.id,
-                          );
-
-                          setError(
-                            hasOverlap !== null
-                              ? "Ese horario no está disponible para esta duración."
-                              : null,
-                          );
-                        }}
-                        required
-                        className="w-full p-3 rounded-2xl bg-background shadow border-none outline-none cursor-pointer active:scale-99 transition-all duration-300"
-                      >
-                        <option value="">Selecciona un tipo de asesoría</option>
-
-                        {consultationTypes
-                          .filter((type) => type.active)
-                          .map((type) => (
-                            <option key={type.id} value={type.id}>
-                              {type.name}
-                            </option>
-                          ))}
-                      </select>
-                    )}
-                    <AppointmentTimePicker
-                      value={form.startTime}
-                      date={form.date}
-                      appointments={selectedDateAppointments}
-                      durationMinutes={
-                        selectedConsultationType?.durationMinutes ?? 0
-                      }
-                      excludedAppointmentId={selectedAppointment?.id}
-                      onChange={(startTime) =>
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void submitNewAppointment();
+                  }}
+                >
+                  <p>
+                    Editar o crear un turno{" "}
+                    {form.date &&
+                      new Intl.DateTimeFormat("es", {
+                        dateStyle: "medium",
+                      }).format(new Date(form.date))}
+                  </p>
+                  <label className="flex flex-col gap-1.5 text-sm font-medium">
+                    Mail
+                    <input
+                      value={form.email}
+                      onChange={(event) =>
                         setForm((current) => ({
                           ...current,
-                          startTime,
+                          email: event.target.value,
                         }))
                       }
+                      required
+                      maxLength={120}
+                      className="h-11 rounded-xl border border-black/15 bg-white/60 px-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
-                    {error && (
-                      <p
-                        className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-800"
-                        role="alert"
-                      >
-                        {error}
-                      </p>
-                    )}
-                    <div className="mt-2 flex flex-wrap justify-between gap-2 border-t border-black/10 pt-4">
-                      <button
-                        type="button"
-                        disabled={isSaving}
-                        onClick={() => closeDialog()}
-                        className="h-10 rounded-xl px-4 text-sm font-medium transition hover:bg-black/5 disabled:opacity-40 bg-red-600 text-white"
-                      >
-                        Cerrar
-                      </button>
-                      <div className="flex justify-center items-center gap-2">
-                        <button
-                          type="submit"
-                          disabled={isSaving}
-                          className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-                        >
-                          <IoSaveOutline aria-hidden="true" />
-                          {isSaving ? (
-                            <ThinkingOrb
-                              state="connecting"
-                              size={20}
-                              theme="light"
-                            />
-                          ) : isEditing ? (
-                            "Editar"
-                          ) : (
-                            "Crear turno"
-                          )}
-                        </button>
-                        {isEditing && (
-                          <>
-                            {" "}
-                            <button
-                              type="button"
-                              disabled={isSaving}
-                              onClick={() => {
-                                if (selectedAppointment) {
-                                  void paid(selectedAppointment.id);
-                                }
-                              }}
-                              className="inline-flex h-10 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-                            >
-                              <IoLogoUsd aria-hidden="true" />
+                  </label>
+                  <label className="flex flex-col gap-1.5 text-sm font-medium">
+                    Instagram
+                    <input
+                      value={form.instagram}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          instagram: event.target.value,
+                        }))
+                      }
+                      required
+                      maxLength={120}
+                      className="h-11 rounded-xl border border-black/15 bg-white/60 px-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    />
+                  </label>
 
-                              {isSaving ? (
-                                <ThinkingOrb
-                                  state="connecting"
-                                  size={20}
-                                  theme="light"
-                                />
-                              ) : (
-                                "Marcar como Pagado"
-                              )}
-                            </button>
-                            <button
-                              type="button"
-                              disabled={isSaving}
-                              onClick={() => {
-                                if (selectedAppointment) {
-                                  void cancel(selectedAppointment.id);
-                                }
-                              }}
-                              className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-700 px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-                            >
-                              <MdOutlineCancel aria-hidden="true" />
-
-                              {isSaving ? (
-                                <ThinkingOrb
-                                  state="connecting"
-                                  size={20}
-                                  theme="light"
-                                />
-                              ) : (
-                                "Cancelar turno"
-                              )}
-                            </button>
-                          </>
-                        )}
-                      </div>
+                  {isConsultationTypesLoading ? (
+                    <div className="w-full flex justify-center items-center">
+                      <ThinkingOrb state="connecting" size={20} theme="light" />
                     </div>
-                  </form>
+                  ) : (
+                    <select
+                      name="consultationType"
+                      value={form.consultationTypeId || ""}
+                      onChange={(e) => {
+                        const consultationTypeId = Number(e.target.value);
+
+                        setForm((prev) => ({
+                          ...prev,
+                          consultationTypeId,
+                        }));
+
+                        const newConsultationType = consultationTypes.find(
+                          (type) => type.id === consultationTypeId,
+                        );
+
+                        if (!newConsultationType || !form.startTime) {
+                          setError(null);
+                          return;
+                        }
+
+                        const hasOverlap = findAppointmentConflict(
+                          form.date,
+                          form.startTime,
+                          newConsultationType.durationMinutes,
+                          selectedDateAppointments,
+                          selectedAppointment?.id,
+                        );
+
+                        setError(
+                          hasOverlap !== null
+                            ? "Ese horario no está disponible para esta duración."
+                            : null,
+                        );
+                      }}
+                      required
+                      className="w-full p-3 rounded-2xl bg-background shadow border-none outline-none cursor-pointer active:scale-99 transition-all duration-300"
+                    >
+                      <option value="">Selecciona un tipo de asesoría</option>
+
+                      {consultationTypes
+                        .filter((type) => type.active)
+                        .map((type) => (
+                          <option key={type.id} value={type.id}>
+                            {type.name}
+                          </option>
+                        ))}
+                    </select>
+                  )}
+                  <AppointmentTimePicker
+                    value={form.startTime}
+                    date={form.date}
+                    appointments={selectedDateAppointments}
+                    durationMinutes={
+                      selectedConsultationType?.durationMinutes ?? 0
+                    }
+                    excludedAppointmentId={selectedAppointment?.id}
+                    onChange={(startTime) =>
+                      setForm((current) => ({
+                        ...current,
+                        startTime,
+                      }))
+                    }
+                  />
+                  {error && (
+                    <p
+                      className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-800"
+                      role="alert"
+                    >
+                      {error}
+                    </p>
+                  )}
+                  <div className="mt-2 flex flex-wrap justify-between gap-2 border-t border-black/10 pt-4">
+                    <button
+                      type="button"
+                      disabled={isSaving}
+                      onClick={() => closeDialog()}
+                      className="h-10 rounded-xl px-4 text-sm font-medium transition hover:bg-black/5 disabled:opacity-40 bg-red-600 text-white"
+                    >
+                      Cerrar
+                    </button>
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                      >
+                        <IoSaveOutline aria-hidden="true" />
+                        {isSaving ? (
+                          <ThinkingOrb
+                            state="connecting"
+                            size={20}
+                            theme="light"
+                          />
+                        ) : isEditing ? (
+                          "Editar"
+                        ) : (
+                          "Crear turno"
+                        )}
+                      </button>
+                      {isEditing && (
+                        <>
+                          {" "}
+                          <button
+                            type="button"
+                            disabled={isSaving}
+                            onClick={() => {
+                              if (selectedAppointment) {
+                                void paid(selectedAppointment.id);
+                              }
+                            }}
+                            className="inline-flex h-10 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                          >
+                            <IoLogoUsd aria-hidden="true" />
+
+                            {isSaving ? (
+                              <ThinkingOrb
+                                state="connecting"
+                                size={20}
+                                theme="light"
+                              />
+                            ) : (
+                              "Marcar como Pagado"
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isSaving}
+                            onClick={() => {
+                              if (selectedAppointment) {
+                                void cancel(selectedAppointment.id);
+                              }
+                            }}
+                            className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-700 px-4 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                          >
+                            <MdOutlineCancel aria-hidden="true" />
+
+                            {isSaving ? (
+                              <ThinkingOrb
+                                state="connecting"
+                                size={20}
+                                theme="light"
+                              />
+                            ) : (
+                              "Cancelar turno"
+                            )}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </form>
               </>
             </motion.section>
           </motion.div>
         )}
       </AnimatePresence>
-    </main>
+    </MainDashboardLayout>
   );
 }
