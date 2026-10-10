@@ -72,7 +72,7 @@ export const ConsultingServices = () => {
           </div>
         ))}
       </div>
-      <div className="w-full  max-w-7xl rounded-4xl bg-flagGradient relative overflow-hidden p-10 flex flex-col justify-center items-center gap-5 dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)]">
+      <div className="w-full  max-w-7xl rounded-4xl bg-flagGradient relative overflow-hidden p-10 flex flex-col justify-center items-center gap-5 dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)] text-white">
         <Glow enter={false} />
         <div className="relative z-10 flex flex-col justify-center items-center">
           <h1 className="font-dm text-4xl font-bold sm:text-5xl">
