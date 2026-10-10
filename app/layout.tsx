@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, DM_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Toaster } from "sileo";
@@ -12,6 +12,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const DM = DM_Sans({
+  variable: "--font-Dm",
   subsets: ["latin"],
 });
 
@@ -37,9 +42,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased h-full scrollbar-none!`}
+      className={`${geistSans.variable} ${geistMono.variable} ${DM.variable} antialiased h-full scrollbar-none!`}
     >
-      <body className="h-full flex flex-col ">
+      <body className="h-full flex flex-col  w-full relative">
         <Toaster
           position="top-center"
           options={{
@@ -53,8 +58,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             },
           }}
         />
-        <NavbarVisibility />
-        {children}
+        <div className="w-full">
+          <NavbarVisibility />
+          {children}
+        </div>
       </body>
     </html>
   );
