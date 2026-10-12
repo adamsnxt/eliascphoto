@@ -21,12 +21,36 @@ const DM = DM_Sans({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://eliascphoto.art";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+
   title: "EliasCPhoto | Color Grading y Edición de Video",
+
   description:
     "Aprendé color grading y edición de video con EliasCPhoto. Asesorías 1 a 1 para mejorar el color y llevar tus fotos y videos a otro nivel.",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "EliasCPhoto",
+    title: "EliasCPhoto | Color Grading y Edición de Video",
+    description: "Aprendé color grading y edición de video con EliasCPhoto.",
+    locale: "es_AR",
+  },
+
   icons: {
     icon: [
+      {
+        url: "/fav/favicon.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
       {
         url: "/fav/favIconL.png",
         media: "(prefers-color-scheme: light)",
@@ -36,6 +60,7 @@ export const metadata: Metadata = {
         media: "(prefers-color-scheme: dark)",
       },
     ],
+    apple: "/fav/apple-touch-icon.png",
   },
 };
 
