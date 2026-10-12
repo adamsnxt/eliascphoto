@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { Toaster } from "sileo";
 import NavbarVisibility from "@/src/components/providers/NavbarVisibility";
+import LenisProvider from "@/src/components/providers/LenisProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,7 +45,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} ${DM.variable} antialiased h-full scrollbar-none!`}
     >
-      <body className="h-full flex flex-col  w-full relative">
+      <body className="h-full flex flex-col w-full relative">
         <Toaster
           position="top-center"
           options={{
@@ -58,10 +59,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             },
           }}
         />
-        <div className="w-full">
-          <NavbarVisibility />
-          {children}
-        </div>
+        <LenisProvider>
+          <div className="w-full">
+            <NavbarVisibility />
+            {children}
+          </div>
+        </LenisProvider>
       </body>
     </html>
   );

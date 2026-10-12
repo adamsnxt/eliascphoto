@@ -5,140 +5,167 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const LINKS = ["https://spektrafilm.114c.de"];
+const LINKS = [
+  {
+    link: "https://spektrafilm.114c.de",
+    snap: "/spektraSnapShot.jpg",
+  },
+];
 
-function ToolCard({ link }: { link: LinkPreview }) {
+interface ToolCardProps {
+  snap: string;
+  url: string;
+  preview?: LinkPreview;
+}
+
+function ToolCard({ snap, url, preview }: ToolCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const finalImage = preview?.image;
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [finalImage]);
+
   return (
-    <Link href={link.url} target="_blank" rel="noopener noreferrer">
-      <motion.div
+    <Link
+      href={preview?.url ?? url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full"
+    >
+      <div
         className="
-          w-full
-          rounded-2xl
           relative
-          shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]
-          bg-background
-          flex
-          flex-col
+          w-full
+          aspect-video
           overflow-hidden
+          rounded-2xl
+          bg-background
+          shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]
           cursor-pointer
         "
-        initial={{
-          opacity: 0,
-          filter: "blur(12px)",
-          scale: 1.01,
-        }}
-        animate={{
-          opacity: 1,
-          filter: "blur(0px)",
-          scale: 1,
-        }}
-        transition={{
-          duration: 0.6,
-          ease: "easeOut",
-        }}
       >
-        <motion.p
+        {/* Snapshot: siempre permanece debajo */}
+        <img
+          src={snap}
+          alt=""
+          aria-hidden="true"
           className="
-            text-xl
-            capitalize
-            absolute
-            top-0
-            left-0
-            z-10
-            w-full
-            p-5
-            backdrop-blur
-            mask-[linear-gradient(to_bottom,black_0%,black_35%,transparent_100%)]
-            font-bold
-            truncate
-            pointer-events-none
+            absolute inset-0
+            h-full w-full
+            object-cover
           "
-          animate={{
-            color: "#fff",
-          }}
-          transition={{
-            duration: 0.3,
-          }}
-        >
-          {link.title}
-        </motion.p>
+        />
 
-        {link.image && (
-          <img
-            src={link.image}
-            alt={link.description ?? link.title ?? ""}
-            className="w-full aspect-video object-cover"
+        {/* Imagen definitiva: aparece cuando terminó de cargar */}
+        {finalImage && (
+          <motion.img
+            key={finalImage}
+            src={finalImage}
+            alt={preview?.description ?? preview?.title ?? ""}
+            initial={{
+              opacity: 0,
+              filter: "blur(6px)",
+            }}
+            animate={{
+              opacity: imageLoaded ? 1 : 0,
+              filter: imageLoaded ? "blur(0px)" : "blur(6px)",
+            }}
+            transition={{
+              opacity: {
+                duration: 0.65,
+                ease: "easeInOut",
+              },
+              filter: {
+                duration: 0.65,
+                ease: "easeOut",
+              },
+            }}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(false)}
+            className="
+              absolute inset-0
+              h-full w-full
+              object-cover
+            "
           />
         )}
-      </motion.div>
+
+        {/* Información: aparece cuando llega la preview */}
+        {preview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.15,
+            }}
+            className="
+              absolute inset-x-0 top-0 z-10
+              p-5
+              text-white
+              pointer-events-none
+              bg-linear-to-b
+              from-black/60
+              to-transparent
+            "
+          >
+            <p className="text-xl font-bold capitalize truncate">
+              {preview.title}
+            </p>
+          </motion.div>
+        )}
+      </div>
     </Link>
   );
 }
 
-function ToolSkeleton() {
-  return (
-    <motion.div
-      className="
-        w-full
-        rounded-2xl
-        relative
-        shadow-[0_0_10px_0px_rgba(0,0,0,0.3)]
-        bg-background
-        flex
-        flex-col
-        overflow-hidden
-      "
-      initial={{
-        opacity: 0,
-        filter: "blur(20px)",
-        scale: 1.02,
-      }}
-      animate={{
-        opacity: 1,
-        filter: "blur(12px)",
-        scale: 1.01,
-      }}
-      transition={{
-        duration: 0.5,
-        ease: "easeOut",
-      }}
-    >
-      <img
-        src="/skeletonLoading.png"
-        alt=""
-        className="
-          w-full
-          aspect-video
-          object-cover
-        "
-      />
-    </motion.div>
-  );
-}
-
 export default function ToolsPage() {
-  const [links, setLinks] = useState<LinkPreview[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [links, setLinks] = useState<Record<string, LinkPreview>>({});
 
   useEffect(() => {
+    let active = true;
+
     const loadLinks = async () => {
-      const results = await Promise.all(
-        LINKS.map((link) => getLinkPreview(link)),
+      await Promise.all(
+        LINKS.map(async ({ link }) => {
+          try {
+            const result = await getLinkPreview(link);
+
+            if (!active || !result) return;
+
+            setLinks((prev) => ({
+              ...prev,
+              [link]: result,
+            }));
+          } catch (error) {
+            console.error("Error loading preview:", error);
+          }
+        }),
       );
-
-      setLinks(results.filter((link): link is LinkPreview => link !== null));
-
-      setLoading(false);
     };
 
-    loadLinks();
+    void loadLinks();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-3 md:p-5 gap-3 md:gap-5">
-      {loading
-        ? LINKS.map((_, index) => <ToolSkeleton key={index} />)
-        : links.map((link) => <ToolCard key={link.url} link={link} />)}
+    <div
+      className="
+        grid grid-cols-1
+        md:grid-cols-2
+        lg:grid-cols-3
+        gap-3 md:gap-5
+        p-3 md:p-5
+      "
+    >
+      {LINKS.map(({ link, snap }) => (
+        <ToolCard key={link} url={link} snap={snap} preview={links[link]} />
+      ))}
     </div>
   );
 }

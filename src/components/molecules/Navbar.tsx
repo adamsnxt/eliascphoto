@@ -5,16 +5,49 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 const ROUTES = [
   {
     label: "Herramientas",
     path: "/tools",
   },
 ];
+
 const Navbar = () => {
+  const [progress, setProgress] = useState(0);
   const path = usePathname();
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+
+      const scrollHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      const percentage =
+        scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+
+      setProgress(Math.min(100, Math.max(0, percentage)));
+    };
+
+    updateProgress();
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, [path]);
   return (
     <nav className="sticky top-0 left-0 flex justify-center items-center w-full h-24 pt-5 z-50 px-3">
+      <motion.div
+        className="fixed top-0 left-0 z-100 h-px bg-primary"
+        initial={{ width: "0%" }}
+        animate={{ width: `${progress}%` }}
+        transition={{ duration: 0.1, ease: "linear" }}
+      />
       <div className="max-w-3xl flex justify-between px-3 sm:px-5 py-2 sm:p-3 items-center dark:shadow-[0_0_10px_rgba(0,0,0,0.8)] shadow-[0_0_10px_rgba(0,0,0,0.3)] rounded-3xl w-full sm:h-20 h-16 bg-background relative z-50">
         <div className="absolute top-3 bottom-3 left-3 ">
           <AnimatePresence mode="wait">
@@ -69,8 +102,7 @@ const Navbar = () => {
             <Link
               key={route.path}
               href={route.path}
-              className="p-2 px-4 dark:shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.8)] 
-                  shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.3)] rounded-2xl"
+              className="p-2 px-4  rounded-2xl"
             >
               {route.label}
             </Link>

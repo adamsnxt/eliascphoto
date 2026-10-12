@@ -108,7 +108,7 @@ export const Hero = () => {
 
   return (
     <>
-      <section className="relative flex flex-col items-center overflow-hidden h-[calc(100dvh-6rem)] w-full">
+      <section className="relative flex flex-col items-center overflow-hidden h-[calc(100vh-6rem)] w-full">
         <div className="flex w-full flex-1 flex-col items-center gap-3 px-3 py-3 sm:gap-5 sm:px-6 sm:py-5 ">
           <div
             className="relative flex min-h-0 w-full max-w-7xl flex-3 flex-col xl:items-end items-center justify-center gap-4 rounded-4xl bg-flagGradient p-6 shadow-2xl sm:gap-5 sm:rounded-[4rem] sm:p-10 md:p-16 lg:rounded-[8rem] lg:p-24  group text-white"
@@ -155,12 +155,23 @@ export const Hero = () => {
               className="w-full h-full absolute top-0 left-0"
             >
               <Image
-                src={"/yo.png"}
+                src="/yo.png"
                 width={3000}
                 height={3000}
                 alt=""
                 priority
-                className="absolute bottom-0 max-w-179 left-0 z-20 grayscale-10 select-none pointer-events-none xl:block hidden"
+                className="
+      absolute bottom-0 left-0 z-20
+      hidden xl:block
+      h-[calc(100%+2.5rem)]
+      w-auto
+      aspect-square
+      max-h-179
+      max-w-179
+      object-contain
+      grayscale-10
+      select-none pointer-events-none
+    "
               />
             </motion.div>
           </div>
@@ -281,7 +292,7 @@ export const Hero = () => {
       </section>
       <Link
         href="/new-review"
-        className="fixed bottom-5 right-5 z-50 inline-flex min-h-12 items-center gap-2 rounded-full bg-black/10 px-5 py-3 text-sm font-semibold  text-foreground shadow-xl backdrop-blur-md transition hover:scale-105 hover:bg-black/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-background sm:bg-foreground sm:backdrop-blur-none sm:hover:bg-neutral-900"
+        className="fixed bottom-5 right-5 z-50 inline-flex min-h-12 items-center gap-2 rounded-full bg-black/10 px-5 py-3 text-sm font-semibold  text-foreground shadow-xl backdrop-blur-md transition hover:scale-101 hover:bg-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:text-background sm:bg-foreground sm:backdrop-blur-none sm:hover:bg-foreground/90"
       >
         <FaStar className="text-amber-400" aria-hidden="true" />
         <span>Dejar reseña</span>
